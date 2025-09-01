@@ -1,6 +1,6 @@
 #include "reloc.h"
 
-#if __has_feature(ptrauth_intrinsics)
+#if defined(__PTRAUTH__) || __has_feature(ptrauth_intrinsics)
 
 #include <stdint.h>
 

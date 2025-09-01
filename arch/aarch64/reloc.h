@@ -33,7 +33,7 @@
 #define CRTJMP(pc,sp) __asm__ __volatile__( \
 	"mov sp,%1 ; br %0" : : "r"(pc), "r"(sp) : "memory" )
 
-#if __has_feature(ptrauth_intrinsics)
+#if defined(__PTRAUTH__) || __has_feature(ptrauth_intrinsics)
 
 #include <stdint.h>
 
