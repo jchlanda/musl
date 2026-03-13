@@ -44,6 +44,9 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 			}
 		}
 		ksa.handler = sa->sa_handler;
+#if __has_feature(ptrauth_calls)
+		ksa.handler = __builtin_ptrauth_strip(ksa.handler, 0);
+#endif
 		ksa.flags = sa->sa_flags;
 #ifdef SA_RESTORER
 		ksa.flags |= SA_RESTORER;
