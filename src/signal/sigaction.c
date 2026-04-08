@@ -50,8 +50,14 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 		ksa.restorer = (sa->sa_flags & SA_SIGINFO) ? __restore_rt : __restore;
 #if __has_feature(ptrauth_calls)
 		/* When the restorer is called by kernel, the restorer pointer is expected to be unsigned.
-		 * It was previously implicitly signed, so strip the signature manually. */
-		ksa.restorer = __builtin_ptrauth_strip(ksa.restorer, 0);
+		 * It was previously implicitly signed, so perform authentication. */
+                ksa.restorer = __builtin_ptrauth_auth(
+                    ksa.restorer, /* ptrauth_key_asia */ 0, /* discriminator */ 0);
+                ksa.handler =
+                    (ksa.handler != SIG_DFL && ksa.handler != SIG_IGN)
+                        ? __builtin_ptrauth_auth(ksa.handler, /* ptrauth_key_asia */ 0,
+                                                 /* discriminator */ 0)
+                        : ksa.handler;
 #endif
 #endif
 		memcpy(&ksa.mask, &sa->sa_mask, _NSIG/8);
