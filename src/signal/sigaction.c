@@ -51,6 +51,9 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 #if __has_feature(ptrauth_calls)
 		/* When the restorer is called by kernel, the restorer pointer is expected to be unsigned.
 		 * It was previously implicitly signed, so perform authentication. */
+#if __has_feature(ptrauth_function_pointer_type_discrimination)
+#error "Function pointer type discrimination is not yet supported."
+#endif
                 ksa.restorer = __builtin_ptrauth_auth(
                     ksa.restorer, /* ptrauth_key_asia */ 0, /* discriminator */ 0);
                 ksa.handler =
