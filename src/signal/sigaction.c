@@ -54,13 +54,14 @@ int __libc_sigaction(int sig, const struct sigaction *restrict sa, struct sigact
 #if __has_feature(ptrauth_function_pointer_type_discrimination)
 #error "Function pointer type discrimination is not yet supported."
 #endif
-                ksa.restorer = __builtin_ptrauth_auth(
-                    ksa.restorer, /* ptrauth_key_asia */ 0, /* discriminator */ 0);
-                ksa.handler =
-                    (ksa.handler != SIG_DFL && ksa.handler != SIG_IGN)
-                        ? __builtin_ptrauth_auth(ksa.handler, /* ptrauth_key_asia */ 0,
-                                                 /* discriminator */ 0)
-                        : ksa.handler;
+		ksa.restorer = __builtin_ptrauth_auth(
+			ksa.restorer, /* ptrauth_key_asia */ 0,
+			/* discriminator */ 0);
+		if (ksa.handler != SIG_DFL && ksa.handler != SIG_IGN) {
+			ksa.handler = __builtin_ptrauth_auth(
+				ksa.handler, /* ptrauth_key_asia */ 0,
+				/* discriminator */ 0);
+		}
 #endif
 #endif
 		memcpy(&ksa.mask, &sa->sa_mask, _NSIG/8);
